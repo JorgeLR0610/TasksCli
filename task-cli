@@ -1,0 +1,3 @@
+#!/bin/bash
+
+java -jar target/TasksCli-1.0-SNAPSHOT.jar "$@"
