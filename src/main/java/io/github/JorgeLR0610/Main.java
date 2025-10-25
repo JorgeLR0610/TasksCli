@@ -1,13 +1,11 @@
 package io.github.JorgeLR0610;
 
 import model.Task;
-import model.TaskManager;
+import service.TaskManager;
 
 import java.time.LocalDate;
 import java.util.List;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
         //In case there are no args
@@ -34,7 +32,7 @@ public class Main {
                     } //At the end of this loop, nextId will have the biggest id, so it only remains to add 1
                     nextId++;
 
-                    tasks.add(new Task(nextId, description, "todo", LocalDate.now(), LocalDate.now()));
+                    tasks.add(new Task(nextId, description, "todo", LocalDate.now().toString(), LocalDate.now().toString()));
                     TaskManager.saveTasks(tasks);
                     System.out.println("Task added successfully (ID: " + nextId + ")");
                     break;
@@ -42,43 +40,82 @@ public class Main {
                 case "update":
                     int idToUpdate = Integer.parseInt(args[1]);
                     String newDescription = args[2];
-                    //Logic
-                    System.out.println("Task with ID" + idToUpdate + "successfully updated");
+                    tasks = TaskManager.loadTasks();
+                    for (Task t : tasks){
+                        if(t.getId() == idToUpdate){
+                            t.setDescription(newDescription);
+                            t.setUpdatedAt(LocalDate.now().toString());
+                            break;
+                        }
+                    }
+                    TaskManager.saveTasks(tasks);
+                    System.out.println("Task with ID: " + idToUpdate + " successfully updated");
                     break;
+
                 case "delete":
                     int idToDelete = Integer.parseInt(args[1]);
+                    tasks = TaskManager.loadTasks();
 
-                    System.out.println("Task with ID" + idToDelete + "successfully deleted");
+                    boolean removed = tasks.removeIf(t -> t.getId() == idToDelete); //Even though removeIf iterates over the entire list and removes all the elements that meet the condition, since each task has a unique ID, only one will be removed
+                    if(removed){
+                        System.out.println("Task with ID: " + idToDelete + " successfully deleted");
+                    } else{
+                        System.out.println("The ID: " + idToDelete + " does not exist");
+                    }
+                    TaskManager.saveTasks(tasks);
                     break;
+
                 case "list":
-                    //Show tasks in json file
-                    break;
-                case "list done":
+                    tasks = TaskManager.loadTasks();
+                    String filter = (args.length > 1) ? args[1] : "all";
 
+                    System.out.println("---List of tasks---");
+                    boolean found = false;
+                    for (Task t : tasks){
+                        if(filter.equals("all") || t.getStatus().equals(filter)){
+                            System.out.println(t); //Since t is an objet from the class Task, using sout will use the .toString() method defined in that class
+                            found = true;
+                        }
+                    }
+                    if(!found){
+                        System.out.println("There are no tasks marked as " + filter);
+                    }
                     break;
-                case "list todo":
 
-                    break;
-                case "list in-progress":
-
-                    break;
                 case "mark-in-progress":
                     int idToMarkInProgress = Integer.parseInt(args[1]);
-
-                    System.out.println("Task marked as in progress");
+                    tasks = TaskManager.loadTasks();
+                    for (Task t : tasks){
+                        if(t.getId() == idToMarkInProgress){
+                            t.setStatus("in-progress");
+                            t.setUpdatedAt(LocalDate.now().toString());
+                            break;
+                        }
+                    }
+                    TaskManager.saveTasks(tasks);
+                    System.out.println("Task with ID: " + idToMarkInProgress + " as in progress");
                     break;
+
                 case "mark-done":
                     int idToMarkDone = Integer.parseInt(args[1]);
-
-                    System.out.println("Task marked as done");
+                    tasks = TaskManager.loadTasks();
+                    for (Task t : tasks){
+                        if(t.getId() == idToMarkDone){
+                            t.setStatus("done");
+                            t.setUpdatedAt(LocalDate.now().toString());
+                            break;
+                        }
+                    }
+                    TaskManager.saveTasks(tasks);
+                    System.out.println("Task with ID: " + idToMarkDone + " marked as done");
                     break;
             }
 
         }catch(IndexOutOfBoundsException e){
-            System.err.println("Error, there are some arguments missing for '" + action + "'.");
+            System.err.println("Error, there are some arguments missing for '" + action + "'");
         }
         catch(NumberFormatException e){
-            System.err.println("Error: The ID must be String.");
+            System.err.println("Error: The ID must be integer.");
         }
         catch(Exception e){
             System.err.println("An unexpected error occurred: " + e.getMessage());

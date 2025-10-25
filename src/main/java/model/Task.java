@@ -1,16 +1,14 @@
 package model;
 
-import java.time.LocalDate;
-
 public class Task {
 
-    private int id;
+    private final int id;
     private String description;
     private String status;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private final String createdAt;
+    private String updatedAt;
 
-    public Task(int id, String description, String status, LocalDate createdAt, LocalDate updatedAt) {
+    public Task(int id, String description, String status, String createdAt, String updatedAt) {
         this.id = id;
         this.description = description;
         this.status = status;
@@ -18,16 +16,19 @@ public class Task {
         this.updatedAt = updatedAt;
     }
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                '}';
+    }
+
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public void setDescription(String description) {
@@ -42,19 +43,7 @@ public class Task {
         this.status = status;
     }
 
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDate getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 }
